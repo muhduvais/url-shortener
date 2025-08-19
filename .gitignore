@@ -52,3 +52,11 @@ dist-ssr
 .project
 .c9/
 .settings/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Jest / Vitest
+.jest/
+.vitest/
