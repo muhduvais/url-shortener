@@ -20,27 +20,27 @@ Tech Stack
 
 Setup & Installation
 
-Clone the repository
+1. Clone the repository
 ```
 git clone https://github.com/muhduvais/url-shortener.git
 cd url-shortener
+```
 
-
-Backend Setup
-
+2. Backend Setup
+```
 cd backend
 npm install
 npm run start:dev
-
+```
 
 Runs on → http://localhost:3000
 
-Frontend Setup
-
+3. Frontend Setup
+```
 cd frontend
 npm install
 npm start
-
+```
 
 Runs on → http://localhost:5173 (default Vite server)
 
