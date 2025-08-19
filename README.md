@@ -1,9 +1,10 @@
-##URL Shortener
+Url Shortener
+----------------------------------
 
 A full-stack URL Shortener application built with NestJS (backend), MongoDB, and React (frontend).
 Users can register, log in, shorten URLs, and view their URL history.
 
--> Features
+- Features
 ---------------
 User authentication with JWT
 Secure password storage
@@ -12,13 +13,13 @@ URL history tracking per user
 Form validation and centralized error handling
 RESTful API architecture
 
--> Tech Stack
+- Tech Stack
 ------------------
 Backend: NestJS, MongoDB
 Frontend: React
 Deployment: Vercel (frontend), Render (backend)
 
--> Setup & Installation
+- Setup & Installation
 ----------------------------
 
 1. Clone the repository
@@ -45,12 +46,12 @@ npm start
 
 Frontend runs on: http://localhost:5173 (default Vite dev server)
 
--> Deployment
+- Deployment
 -------------------
 Frontend: Vercel
 Backend: Render
 
--> Future Improvements
+- Future Improvements
 --------------------------
 Add click tracking for shortened URLs
 Analytics dashboard for users
