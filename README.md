@@ -5,18 +5,18 @@ Users can register, log in, shorten URLs, and view their URL history.
 
 ### **Features**
 
-→ User authentication with JWT
-→ Secure password storage
-→ URL shortening with redirection
-→ URL history tracking per user
-→ Form validation and centralized error handling
-→ RESTful API architecture
+- User authentication with JWT
+- Secure password storage
+- URL shortening with redirection
+- URL history tracking per user
+- Form validation and centralized error handling
+- RESTful API architecture
 
 ### **Tech Stack**
 
-→ Backend: NestJS, MongoDB
-→ Frontend: React
-→ Deployment: Vercel (frontend), Render (backend)
+- Backend: NestJS, MongoDB
+- Frontend: React
+- Deployment: Vercel (frontend), Render (backend)
 
 ### **Setup & Installation**
 
@@ -33,7 +33,7 @@ npm install
 npm run start:dev
 ```
 
- Runs on → http://localhost:3000
+ Runs on - http://localhost:3000
 
 3. Frontend Setup
 ```
@@ -42,16 +42,16 @@ npm install
 npm start
 ```
 
- Runs on → http://localhost:5173 (default Vite server)
+ Runs on - http://localhost:5173 (default Vite server)
 
 ### **Deployment**
 
-→ Frontend: Vercel
-→ Backend: Render
+- Frontend: Vercel
+- Backend: Render
 
 ### **Future Improvements**
 
-→ Add click tracking for shortened URLs
-→ Analytics dashboard for users
-→ Testing (unit & e2e)
-→ Docker support
+- Add click tracking for shortened URLs
+- Analytics dashboard for users
+- Testing (unit & e2e)
+- Docker support
