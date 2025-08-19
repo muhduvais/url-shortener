@@ -44,6 +44,25 @@ npm start
 
  Runs on - http://localhost:5173 (default Vite server)
 
+### **Environment Variables**
+
+**Backend (.env)**
+
+ Create a .env file inside the backend/ directory and add:
+```
+PORT=3000
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=1d
+MONGO_URI=your_mongodb_connection_string
+BASE_URL=http://localhost:3000
+CLIENT_URL=http://localhost:5173
+```
+**Frontend (.env)**
+
+ Create a .env file inside the frontend/ directory and add:
+```
+VITE_SERVER_URL=http://localhost:3000
+```
 ### **Deployment**
 
 - Frontend: Vercel
