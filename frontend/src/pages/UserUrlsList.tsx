@@ -72,7 +72,7 @@ const UserUrlsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4">
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
