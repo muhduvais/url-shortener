@@ -27,6 +27,11 @@ const HomePage = () => {
     e.preventDefault();
     if (!url) return;
 
+    if (!isValidUrl(url)) {
+      setError("Invalid URL");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setCopied(false);
@@ -39,6 +44,15 @@ const HomePage = () => {
       setError(err.response?.data?.message || "Failed to shorten URL");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const isValidUrl = (value: string): boolean => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
     }
   };
 
