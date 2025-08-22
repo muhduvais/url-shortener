@@ -25,6 +25,8 @@ const HomePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShortUrl("");
+    
     if (!url) return;
 
     if (!isValidUrl(url)) {
