@@ -1,4 +1,4 @@
-import axios from '../api/apiClient';
+import axios from "../api/apiClient";
 
 const VITE_SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
@@ -8,16 +8,22 @@ export interface UrlResponse {
   data: string;
 }
 
-interface UrlItem {
+interface UrlData {
   originalUrl: string;
   shortUrl: string;
-  createdDate: string;
+  clicks: number;
+  createdDate: Date;
 }
 
 export interface FetchUrlResponse {
   statusCode: number;
   message: string;
-  data: UrlItem[];
+  data: {
+    urls: UrlData[];
+    total: number;
+    page: number;
+    totalPages: number;
+  };
 }
 
 export const UrlService = {
@@ -26,8 +32,17 @@ export const UrlService = {
     return response.data;
   },
 
-  fetchUrls: async (userId: string): Promise<FetchUrlResponse> => {
-    const response = await axios.get(`${VITE_SERVER_URL}/urls/${userId}`);
+  fetchUrls: async (
+    userId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<FetchUrlResponse> => {
+    const response = await axios.get(`${VITE_SERVER_URL}/urls/${userId}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
     return response.data;
   },
 };

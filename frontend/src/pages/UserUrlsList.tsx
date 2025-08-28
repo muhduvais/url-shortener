@@ -8,24 +8,32 @@ import {
   Loader2,
   AlertCircle,
   Globe,
+  ChevronLeft,
+  ChevronRight,
+  MousePointer,
 } from "lucide-react";
 import { UrlService } from "../api/urlService";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
 
-interface UrlItem {
+interface UrlData {
   originalUrl: string;
   shortUrl: string;
-  createdDate: string;
+  clicks: number;
+  createdDate: Date;
 }
 
 const UserUrlsPage = () => {
   const userId = useSelector((state: any) => state.auth.userId);
-  const [urls, setUrls] = useState<UrlItem[]>([]);
+  const [urls, setUrls] = useState<UrlData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copiedUrl, setCopiedUrl] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const itemsPerPage = 5;
 
   const navigate = useNavigate();
 
@@ -44,9 +52,15 @@ const UserUrlsPage = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await UrlService.fetchUrls(userId);
-        console.log("Fetched URLs:", res.data);
-        setUrls(res.data);
+        const res = await UrlService.fetchUrls(
+          userId,
+          currentPage,
+          itemsPerPage
+        );
+
+        setUrls(res.data.urls);
+        setTotal(res.data.total);
+        setTotalPages(res.data.totalPages);
       } catch (err: any) {
         setError(err.response?.data?.message || "Failed to fetch URLs");
       } finally {
@@ -55,7 +69,7 @@ const UserUrlsPage = () => {
     };
 
     fetchUrls();
-  }, [userId]);
+  }, [userId, currentPage]);
 
   const copyToClipboard = async (shortUrl: string) => {
     try {
@@ -71,6 +85,36 @@ const UserUrlsPage = () => {
     return url.length > 50 ? url.substring(0, 50) + "..." : url;
   };
 
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(totalPages, start + maxVisiblePages - 1);
+
+      if (end - start < maxVisiblePages - 1) {
+        start = Math.max(1, end - maxVisiblePages + 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4">
       <div className="relative z-10 max-w-4xl mx-auto">
@@ -80,7 +124,7 @@ const UserUrlsPage = () => {
             <Link2 className="w-10 h-10 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent mb-4">
               My Shortened URLs
             </h1>
             <p className="text-sm text-gray-300">
@@ -93,19 +137,19 @@ const UserUrlsPage = () => {
           className="text-gray-300 cursor-pointer px-3 py-1 mt-3 mb-6 border-2 border-gray-500 hover:border-gray-300 rounded-lg"
           onClick={() => navigate("/")}
         >
-          <span className="text-purple-400 font-semibold">Go Home</span>
+          <span className="text-gray-400 font-semibold">Go Home</span>
         </button>
 
         {/* Loading State */}
         {loading && (
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-12 text-center">
             <div className="flex flex-col items-center justify-center">
-              <Loader2 className="w-12 h-12 text-purple-400 animate-spin mb-4" />
+              <Loader2 className="w-12 h-12 text-gray-400 animate-spin mb-4" />
               <p className="text-xl text-gray-300">Loading your URLs...</p>
               <div className="flex space-x-1 mt-4">
-                <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce animation-delay-200"></div>
-                <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce animation-delay-400"></div>
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-200"></div>
+                <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce animation-delay-400"></div>
               </div>
             </div>
           </div>
@@ -130,7 +174,7 @@ const UserUrlsPage = () => {
         {!loading && urls.length === 0 && !error && (
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-12 text-center">
             <div className="flex flex-col items-center justify-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-full flex items-center justify-center mb-6">
+              <div className="w-24 h-24 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-full flex items-center justify-center mb-6">
                 <Sparkles className="w-12 h-12 text-gray-400" />
               </div>
               <h3 className="text-2xl font-semibold text-gray-300 mb-4">
@@ -163,7 +207,7 @@ const UserUrlsPage = () => {
                     <div className="flex-1 space-y-4">
                       {/* Original URL */}
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center">
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-xl flex items-center justify-center">
                           <Globe className="w-5 h-5 text-blue-400" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -186,8 +230,8 @@ const UserUrlsPage = () => {
 
                       {/* Short URL */}
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center">
-                          <Link2 className="w-5 h-5 text-purple-400" />
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-xl flex items-center justify-center">
+                          <Link2 className="w-5 h-5 text-gray-400" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-300 mb-1">
@@ -198,7 +242,7 @@ const UserUrlsPage = () => {
                               href={url.shortUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-purple-400 hover:text-purple-300 transition-colors duration-200 flex items-center group/link"
+                              className="text-gray-300 hover:text-gray-200 transition-colors duration-200 flex items-center group/link"
                             >
                               <span className="font-mono">{url.shortUrl}</span>
                               <ExternalLink className="w-4 h-4 ml-2 opacity-0 group-hover/link:opacity-100 transition-opacity duration-200 flex-shrink-0" />
@@ -207,9 +251,26 @@ const UserUrlsPage = () => {
                         </div>
                       </div>
 
+                      {/* Clicks */}
+                      {url.clicks !== undefined && (
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-xl flex items-center justify-center">
+                            <MousePointer className="w-5 h-5 text-orange-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-300 mb-1">
+                              Total Clicks
+                            </p>
+                            <p className="text-orange-400 text-sm font-semibold">
+                              {url.clicks.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Created Date */}
                       <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center">
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-xl flex items-center justify-center">
                           <Calendar className="w-5 h-5 text-green-400" />
                         </div>
                         <div>
@@ -271,15 +332,86 @@ const UserUrlsPage = () => {
           </div>
         )}
 
+        {/* Pagination */}
+        {!loading && urls.length > 0 && totalPages > 1 && (
+          <div className="mt-12">
+            <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+                
+                <div className="text-gray-300 text-sm">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                  {Math.min(currentPage * itemsPerPage, total)} of {total} URLs
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`
+                      px-3 py-2 rounded-lg flex items-center space-x-1 transition-all duration-200
+                      ${
+                        currentPage === 1
+                          ? "text-gray-500 cursor-not-allowed"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700"
+                      }
+                    `}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden sm:inline">Previous</span>
+                  </button>
+
+                  <div className="flex items-center space-x-1">
+                    {getPageNumbers().map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`
+                          px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          ${
+                            page === currentPage
+                              ? "bg-gray-600 text-white"
+                              : "text-gray-300 hover:text-white hover:bg-gray-700"
+                          }
+                        `}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`
+                      px-3 py-2 rounded-lg flex items-center space-x-1 transition-all duration-200
+                      ${
+                        currentPage === totalPages
+                          ? "text-gray-500 cursor-not-allowed"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700"
+                      }
+                    `}
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Footer */}
         {!loading && urls.length > 0 && (
           <div className="mt-12 text-center">
             <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-6 py-3 inline-block">
               <p className="text-gray-300">
                 Total URLs:{" "}
-                <span className="text-purple-400 font-semibold">
-                  {urls.length}
-                </span>
+                <span className="text-gray-400 font-semibold">{total}</span>
+                {totalPages > 1 && (
+                  <>
+                    {" • "}Page {currentPage} of {totalPages}
+                  </>
+                )}
               </p>
             </div>
           </div>
