@@ -1,7 +1,7 @@
 import { UrlServiceResponse } from "../url.service";
 
 export abstract class AbstractUrlService {
-    abstract fetchUrls(userId: string): Promise<UrlServiceResponse[]>;
+    abstract fetchUrls(userId: string, page: number, limit: number): Promise<UrlServiceResponse>;
     abstract createUrl(originalUrl: string, userId: string): Promise<string>;
     abstract getUrlByShortCode(shortCode: string): Promise<string>;
 }

@@ -9,6 +9,9 @@ export class Url extends Document {
     @Prop()
     shortCode: string;
 
+    @Prop()
+    clicks: number;
+
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
     user: MongooseSchema.Types.ObjectId;
 }
