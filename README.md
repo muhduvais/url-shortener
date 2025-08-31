@@ -68,6 +68,39 @@ VITE_SERVER_URL=http://localhost:3000
 - Frontend: Vercel
 - Backend: Render
 
+### **Folder Structure**
+
+.
+├── backend
+│   ├── dist                # Compiled output (JS + .d.ts)
+│   ├── src                 # Main backend source code
+│   │   ├── auth            # Authentication module
+│   │   ├── common          # Constants & filters
+│   │   ├── config          # Configuration (JWT, DB, etc.)
+│   │   ├── routes          # API route definitions
+│   │   ├── url             # URL shortener module
+│   │   ├── user            # User module
+│   │   └── utils           # Utilities
+│   ├── test                # E2E and unit tests
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend
+│   ├── public              # Static files
+│   ├── src                 # Frontend source code
+│   │   ├── api             # API client & services
+│   │   ├── assets          # Images, SVGs, etc.
+│   │   ├── components      # Reusable React components
+│   │   ├── pages           # App pages (Home, Login, etc.)
+│   │   ├── schemas         # Validation schemas
+│   │   ├── store           # Redux store
+│   │   └── App.tsx         # Root component
+│   ├── index.html
+│   ├── vite.config.ts
+│   └── package.json
+│
+└── README.md
+
 ### **Future Improvements**
 
 - Add click tracking for shortened URLs
