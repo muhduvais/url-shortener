@@ -10,7 +10,7 @@ interface CreateUrl {
 
 export abstract class AbstractUrlRepository {
     abstract createUrl(createUrlData: CreateUrl): Promise<Url | null>;
-    abstract fetchUrls(userId: string, skip: number, limit: number): Promise<fetchUrlsResponse>
+    abstract fetchUrls(userId: string, skip: number, limit: number, search: string): Promise<fetchUrlsResponse>
     abstract getUrlByShortCode(shortCode: string): Promise<IUrl | null>;
     abstract incrementClicksByOne(shortCode: string): Promise<void>;
 }

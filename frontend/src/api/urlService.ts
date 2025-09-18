@@ -35,12 +35,14 @@ export const UrlService = {
   fetchUrls: async (
     userId: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
+    search: string
   ): Promise<FetchUrlResponse> => {
     const response = await axios.get(`${VITE_SERVER_URL}/urls/${userId}`, {
       params: {
         page,
         limit,
+        search,
       },
     });
     return response.data;

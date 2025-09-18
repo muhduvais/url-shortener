@@ -30,14 +30,23 @@ export class UrlRepository extends AbstractUrlRepository {
     userId: string,
     skip: number,
     limit: number,
+    search: string,
   ): Promise<fetchUrlsResponse> {
+    const query: any = { user: userId };
+
+    if (search && search.trim() !== '') {
+      const regex = new RegExp(this.escapeRegex(search), 'i');
+      const shortCodeFromSearch = search.split("/").pop() || "";
+      query.$or = [{ originalUrl: regex }, { shortCode: shortCodeFromSearch }];
+    }
+
     const urls = await this.urlModel
-      .find({ user: userId })
+      .find(query)
       .skip(skip)
       .limit(limit)
       .lean<IUrl[]>()
       .exec();
-    const total = await this.urlModel.countDocuments({ user: userId });
+    const total = await this.urlModel.countDocuments(query);
     return { urls, total };
   }
 
@@ -53,5 +62,9 @@ export class UrlRepository extends AbstractUrlRepository {
       { shortCode },
       { $inc: { clicks: 1 } },
     );
+  }
+
+  escapeRegex(text: string) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }
