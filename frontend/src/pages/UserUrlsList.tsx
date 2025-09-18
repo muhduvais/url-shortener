@@ -11,11 +11,14 @@ import {
   ChevronLeft,
   ChevronRight,
   MousePointer,
+  Search,
+  Home,
 } from "lucide-react";
 import { UrlService } from "../api/urlService";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
+import { useDebounce } from "../hooks/useDebounce";
 
 interface UrlData {
   originalUrl: string;
@@ -33,7 +36,9 @@ const UserUrlsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState("");
   const itemsPerPage = 5;
+  const debouncedSearch = useDebounce(search, 500);
 
   const navigate = useNavigate();
 
@@ -47,29 +52,25 @@ const UserUrlsPage = () => {
 
   useEffect(() => {
     if (!userId) return;
-
-    const fetchUrls = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await UrlService.fetchUrls(
-          userId,
-          currentPage,
-          itemsPerPage
-        );
-
-        setUrls(res.data.urls);
-        setTotal(res.data.total);
-        setTotalPages(res.data.totalPages);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to fetch URLs");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUrls();
-  }, [userId, currentPage]);
+  }, [userId, currentPage, debouncedSearch]);
+
+  const fetchUrls = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const searchTerm = debouncedSearch ?? '';
+      const res = await UrlService.fetchUrls(userId, currentPage, itemsPerPage, searchTerm);
+
+      setUrls(res.data.urls);
+      setTotal(res.data.total);
+      setTotalPages(res.data.totalPages);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to fetch URLs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const copyToClipboard = async (shortUrl: string) => {
     try {
@@ -133,12 +134,24 @@ const UserUrlsPage = () => {
           </div>
         </div>
 
-        <button
-          className="text-gray-300 cursor-pointer px-3 py-1 mt-3 mb-6 border-2 border-gray-500 hover:border-gray-300 rounded-lg"
-          onClick={() => navigate("/")}
-        >
-          <span className="text-gray-400 font-semibold">Go Home</span>
-        </button>
+        <div className="top-bar flex gap-x-2 items-center mb-5">
+          <button
+            className="text-gray-300 cursor-pointer px-3 py-2 border-2 border-gray-700 rounded-lg flex items-center justify-center"
+            onClick={() => navigate("/")}
+          >
+            <Home size={20} className="text-gray-400 hover:text-white" />
+          </button>
+          <div className="input-div relative w-full">
+            <input
+              type="text"
+              placeholder="Search urls..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="text-gray-300 cursor-text px-3 py-2 pr-10 border-2 border-gray-700 rounded-lg w-full focus:border-gray-500"
+            />
+            <Search className="absolute text-gray-500 right-3 top-1/2 transform -translate-y-1/2" />
+          </div>
+        </div>
 
         {/* Loading State */}
         {loading && (
@@ -191,7 +204,7 @@ const UserUrlsPage = () => {
 
         {/* URLs */}
         {!loading && urls.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-6 h-screen overflow-y-scroll">
             {urls.map((url, index) => (
               <>
                 <div
@@ -337,7 +350,6 @@ const UserUrlsPage = () => {
           <div className="mt-12">
             <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                
                 <div className="text-gray-300 text-sm">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                   {Math.min(currentPage * itemsPerPage, total)} of {total} URLs

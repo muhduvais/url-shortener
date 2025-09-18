@@ -1,6 +1,5 @@
-import { IUrl } from "../interfaces/IUrl";
 import { FetchUrlResponse } from "../url.controller";
 
 export abstract class AbstractUrlController {
-    abstract fetchUrls(userId: string): Promise<FetchUrlResponse>;
+    abstract fetchUrls(userId: string, page: number, limit: number, search: string): Promise<FetchUrlResponse>;
 }

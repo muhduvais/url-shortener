@@ -60,12 +60,14 @@ export class UrlService extends AbstractUrlService {
     userId: string,
     page: number = 1,
     limit: number = 10,
+    search: string,
   ): Promise<UrlServiceResponse> {
     const skip = (page - 1) * limit;
     const { urls, total } = await this.urlRepository.fetchUrls(
       userId,
       skip,
       limit,
+      search
     );
 
     const totalPages = Math.ceil(total / limit);

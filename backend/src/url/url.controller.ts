@@ -60,10 +60,11 @@ export class UrlController extends AbstractUrlController {
     @Param('userId') userId: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @Query('search') search: string,
   ): Promise<FetchUrlResponse> {
     const pageNum = Number(page) || 1;
     const limitNum = Number(limit) || 10;
-    const urlData = await this.urlService.fetchUrls(userId, pageNum, limitNum);
+    const urlData = await this.urlService.fetchUrls(userId, pageNum, limitNum, search);
     return {
       statusCode: STATUS_CODES.SUCCESS,
       message: 'Urls fetched successfully',
