@@ -15,10 +15,11 @@ import {
   Home,
 } from "lucide-react";
 import { UrlService } from "../api/urlService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
 import { useDebounce } from "../hooks/useDebounce";
+import { logout } from "../store/authSlice";
 
 interface UrlData {
   originalUrl: string;
@@ -41,10 +42,12 @@ const UserUrlsPage = () => {
   const debouncedSearch = useDebounce(search, 500);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const auth = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
+    console.log("auth: ", auth);
     if (!auth.isLoggedIn) {
       navigate("/login");
     }
@@ -59,13 +62,21 @@ const UserUrlsPage = () => {
     setLoading(true);
     setError("");
     try {
-      const searchTerm = debouncedSearch ?? '';
-      const res = await UrlService.fetchUrls(userId, currentPage, itemsPerPage, searchTerm);
+      const searchTerm = debouncedSearch ?? "";
+      const res = await UrlService.fetchUrls(
+        userId,
+        currentPage,
+        itemsPerPage,
+        searchTerm
+      );
 
       setUrls(res.data.urls);
       setTotal(res.data.total);
       setTotalPages(res.data.totalPages);
     } catch (err: any) {
+      if (err.response.data.statusCode === 401) {
+        navigate("/login");
+      }
       setError(err.response?.data?.message || "Failed to fetch URLs");
     } finally {
       setLoading(false);
@@ -116,22 +127,35 @@ const UserUrlsPage = () => {
     return pages;
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-12 px-4">
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-15 h-15 border-2 border-gray-500 rounded-3xl mb-6 shadow-2xl">
-            <Link2 className="w-10 h-10 text-white" />
+        <div className="flex items-center justify-center gap-x-3 text-center mb-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 border-2 border-gray-700 rounded-3xl shadow-2xl">
+            <Link2 className="w-8 h-8 text-white" />
           </div>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent mb-4">
+          <div className="text-start">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-100 via-gray-300 to-gray-300 bg-clip-text text-transparent mb-2">
               My Shortened URLs
             </h1>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-400">
               Manage and track your shortened links
             </p>
           </div>
+        </div>
+
+        <div className="logout-btn fixed right-8 top-8">
+          <button
+            onClick={handleLogout}
+            className="text-white border-2 border-gray-700/50 hover:border-gray-400 rounded-xl px-3 py-2"
+          >
+            Logout
+          </button>
         </div>
 
         <div className="top-bar flex gap-x-2 items-center mb-5">
@@ -155,15 +179,10 @@ const UserUrlsPage = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-12 text-center">
+          <div className="flex items-center justify-center backdrop-blur-xl h-[62vh] bg-gray/10 border border-white/20 rounded-2xl shadow-2xl p-12 text-center">
             <div className="flex flex-col items-center justify-center">
               <Loader2 className="w-12 h-12 text-gray-400 animate-spin mb-4" />
-              <p className="text-xl text-gray-300">Loading your URLs...</p>
-              <div className="flex space-x-1 mt-4">
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animation-delay-200"></div>
-                <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce animation-delay-400"></div>
-              </div>
+              <p className="text-md text-gray-300">Loading your URLs...</p>
             </div>
           </div>
         )}
@@ -204,7 +223,7 @@ const UserUrlsPage = () => {
 
         {/* URLs */}
         {!loading && urls.length > 0 && (
-          <div className="space-y-6 h-screen overflow-y-scroll">
+          <div className="space-y-6 h-[55vh] overflow-y-scroll">
             {urls.map((url, index) => (
               <>
                 <div
@@ -220,18 +239,18 @@ const UserUrlsPage = () => {
                     <div className="flex-1 space-y-4">
                       {/* Original URL */}
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-xl flex items-center justify-center">
-                          <Globe className="w-5 h-5 text-blue-400" />
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r bg-gray-500/20 rounded-xl flex items-center justify-center">
+                          <Globe className="w-5 h-5 text-gray-200" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-300 mb-1">
+                          <p className="text-sm font-medium text-gray-400 mb-1">
                             Original URL
                           </p>
                           <a
                             href={url.originalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center group/link"
+                            className="text-gray-100 text-sm hover:text-white transition-colors duration-200 flex items-center group/link"
                           >
                             <span className="truncate">
                               {formatUrl(url.originalUrl)}
@@ -243,11 +262,11 @@ const UserUrlsPage = () => {
 
                       {/* Short URL */}
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-xl flex items-center justify-center">
-                          <Link2 className="w-5 h-5 text-gray-400" />
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r bg-gray-500/20 rounded-xl flex items-center justify-center">
+                          <Link2 className="w-5 h-5 text-gray-200" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-300 mb-1">
+                          <p className="text-sm font-medium text-gray-400 mb-1">
                             Short URL
                           </p>
                           <div className="flex items-center space-x-3">
@@ -255,7 +274,7 @@ const UserUrlsPage = () => {
                               href={url.shortUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-300 hover:text-gray-200 transition-colors duration-200 flex items-center group/link"
+                              className="text-gray-100 text-sm hover:text-white transition-colors duration-200 flex items-center group/link"
                             >
                               <span className="font-mono">{url.shortUrl}</span>
                               <ExternalLink className="w-4 h-4 ml-2 opacity-0 group-hover/link:opacity-100 transition-opacity duration-200 flex-shrink-0" />
@@ -267,14 +286,14 @@ const UserUrlsPage = () => {
                       {/* Clicks */}
                       {url.clicks !== undefined && (
                         <div className="flex items-center space-x-3">
-                          <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-xl flex items-center justify-center">
-                            <MousePointer className="w-5 h-5 text-orange-400" />
+                          <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r bg-gray-500/20 rounded-xl flex items-center justify-center">
+                            <MousePointer className="w-5 h-5 text-gray-200" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-300 mb-1">
+                            <p className="text-sm font-medium text-gray-400 mb-1">
                               Total Clicks
                             </p>
-                            <p className="text-orange-400 text-sm font-semibold">
+                            <p className="text-gray-100 text-sm">
                               {url.clicks.toLocaleString()}
                             </p>
                           </div>
@@ -283,14 +302,14 @@ const UserUrlsPage = () => {
 
                       {/* Created Date */}
                       <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-xl flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-green-400" />
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r bg-gray-500/20 rounded-xl flex items-center justify-center">
+                          <Calendar className="w-5 h-5 text-gray-200" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-300 mb-1">
+                          <p className="text-sm font-medium text-gray-400 mb-1">
                             Created
                           </p>
-                          <p className="text-green-400 text-sm">
+                          <p className="text-gray-100 text-sm">
                             {new Date(url.createdDate).toLocaleString()}
                           </p>
                         </div>
@@ -302,11 +321,11 @@ const UserUrlsPage = () => {
                       <button
                         onClick={() => copyToClipboard(url.shortUrl)}
                         className={`
-                        relative px-6 py-3 rounded-2xl font-semibold transition-all duration-300 focus:outline-none focus:ring-2 transform cursor-pointer
+                        relative px-3 py-2 rounded-xl font-semibold transition-all duration-300 focus:outline-none transform cursor-pointer
                         ${
                           copiedUrl === url.shortUrl
-                            ? "text-white shadow-lg border-2 border-gray-400/20"
-                            : "text-white shadow-lg hover:shadow-xl border-2 border-gray-400/20"
+                            ? "text-gray-100 shadow-lg border-2 border-gray-400/20"
+                            : "text-gray-100 shadow-lg hover:shadow-xl border-2 border-gray-400/20"
                         }
                       `}
                       >
@@ -314,7 +333,7 @@ const UserUrlsPage = () => {
                           {copiedUrl === url.shortUrl ? (
                             <>
                               <svg
-                                className="w-5 h-5"
+                                className="w-4 h-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -326,12 +345,12 @@ const UserUrlsPage = () => {
                                   d="M5 13l4 4L19 7"
                                 />
                               </svg>
-                              <span>Copied!</span>
+                              <span className="text-sm">Copied!</span>
                             </>
                           ) : (
                             <>
-                              <Copy className="w-5 h-5" />
-                              <span>Copy</span>
+                              <Copy className="w-4 h-4" />
+                              <span className="text-sm">Copy</span>
                             </>
                           )}
                         </div>
@@ -339,7 +358,7 @@ const UserUrlsPage = () => {
                     </div>
                   </div>
                 </div>
-                <hr className="text-gray-400" />
+                <hr className="text-gray-700" />
               </>
             ))}
           </div>
@@ -347,8 +366,8 @@ const UserUrlsPage = () => {
 
         {/* Pagination */}
         {!loading && urls.length > 0 && totalPages > 1 && (
-          <div className="mt-12">
-            <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6">
+          <div className="mt-5">
+            <div className="backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl py-1 px-4">
               <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
                 <div className="text-gray-300 text-sm">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
@@ -360,7 +379,7 @@ const UserUrlsPage = () => {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={`
-                      px-3 py-2 rounded-lg flex items-center space-x-1 transition-all duration-200
+                      px-3 py-1 rounded-lg flex items-center space-x-1 transition-all duration-200
                       ${
                         currentPage === 1
                           ? "text-gray-500 cursor-not-allowed"
@@ -378,7 +397,7 @@ const UserUrlsPage = () => {
                         key={page}
                         onClick={() => handlePageChange(page)}
                         className={`
-                          px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                          px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200
                           ${
                             page === currentPage
                               ? "bg-gray-600 text-white"
@@ -395,7 +414,7 @@ const UserUrlsPage = () => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={`
-                      px-3 py-2 rounded-lg flex items-center space-x-1 transition-all duration-200
+                      px-3 py-1 rounded-lg flex items-center space-x-1 transition-all duration-200
                       ${
                         currentPage === totalPages
                           ? "text-gray-500 cursor-not-allowed"
@@ -414,14 +433,18 @@ const UserUrlsPage = () => {
 
         {/* Stats Footer */}
         {!loading && urls.length > 0 && (
-          <div className="mt-12 text-center">
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-6 py-3 inline-block">
-              <p className="text-gray-300">
+          <div className="mt-5 text-center">
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl px-6 py-1 inline-block">
+              <p className="text-gray-400 text-sm">
                 Total URLs:{" "}
-                <span className="text-gray-400 font-semibold">{total}</span>
+                <span className="text-gray-300 font-semibold">{total}</span>
                 {totalPages > 1 && (
                   <>
-                    {" • "}Page {currentPage} of {totalPages}
+                    <span className="text-gray-300 font-semibold">
+                      {" • "}
+                      <span className="text-gray-400">Page</span> {currentPage}{" "}
+                      of {totalPages}
+                    </span>
                   </>
                 )}
               </p>

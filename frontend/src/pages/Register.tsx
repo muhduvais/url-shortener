@@ -37,7 +37,7 @@ const Register = () => {
         <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8">
 
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-2xl mb-4 shadow-lg">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r bg-gray-600 rounded-2xl mb-4 shadow-lg">
               <UserPlus className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
@@ -72,13 +72,13 @@ const Register = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">Full Name</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors" />
+                  <User className="w-5 h-5 text-gray-400 group-focus-within:text-gray-300 transition-colors" />
                 </div>
                 <input
                   type="text"
                   placeholder="Enter your full name"
                   {...register('name')}
-                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 backdrop-blur-sm"
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300/20 transition-all duration-300 backdrop-blur-sm"
                 />
               </div>
               {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
@@ -89,13 +89,13 @@ const Register = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors" />
+                  <Mail className="w-5 h-5 text-gray-400 group-focus-within:text-gray-300 transition-colors" />
                 </div>
                 <input
                   type="email"
                   placeholder="Enter your email"
                   {...register('email')}
-                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 backdrop-blur-sm"
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300/20 transition-all duration-300 backdrop-blur-sm"
                 />
               </div>
               {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
@@ -106,13 +106,13 @@ const Register = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="w-5 h-5 text-gray-400 group-focus-within:text-purple-400 transition-colors" />
+                  <Lock className="w-5 h-5 text-gray-400 group-focus-within:text-gray-300 transition-colors" />
                 </div>
                 <input
                   type="password"
                   placeholder="Create a strong password"
                   {...register('password')}
-                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 backdrop-blur-sm"
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300/20 transition-all duration-300 backdrop-blur-sm"
                 />
               </div>
               {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>}
@@ -121,7 +121,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full py-3 px-6 bg-gradient-to-r bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-300/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center">
@@ -146,7 +146,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="text-purple-400 hover:underline font-medium transition-colors duration-200"
+                  className="text-gray-300 hover:underline font-medium transition-colors duration-200"
                 >
                   Sign in here
                 </button>
