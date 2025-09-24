@@ -33,6 +33,12 @@ export class UrlService extends AbstractUrlService {
   }
 
   async createUrl(originalUrl: string, userId: string): Promise<string> {
+    const existingUrl = await this.urlRepository.fetchUrl(originalUrl, userId);
+
+    if (existingUrl) {
+      throw new InternalServerErrorException('This url is already shortened. You can find it in \'My Urls\'');
+    }
+
     const shortCode = nanoid(8);
 
     const baseUrl = this.configService.get<string>('BASE_URL');
@@ -56,6 +62,18 @@ export class UrlService extends AbstractUrlService {
     return `${baseUrl}/${shortCode}`;
   }
 
+  async deleteUrl(shortCode: string, userId: string): Promise<string> {
+    const deletedUrl = await this.urlRepository.deleteUrl(shortCode, userId);
+
+    if (!deletedUrl) {
+      throw new InternalServerErrorException({
+        message: 'Failed to remove URL',
+      });
+    }
+
+    return deletedUrl;
+  }
+
   async fetchUrls(
     userId: string,
     page: number = 1,
@@ -67,7 +85,7 @@ export class UrlService extends AbstractUrlService {
       userId,
       skip,
       limit,
-      search
+      search,
     );
 
     const totalPages = Math.ceil(total / limit);

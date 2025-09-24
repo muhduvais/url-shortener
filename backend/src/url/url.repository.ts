@@ -11,6 +11,10 @@ interface CreateUrl {
   user: string;
 }
 
+export interface fetchUrlResponse {
+  urls: IUrl;
+}
+
 export interface fetchUrlsResponse {
   urls: IUrl[];
   total: number;
@@ -24,6 +28,17 @@ export class UrlRepository extends AbstractUrlRepository {
 
   async createUrl(createUrlData: CreateUrl): Promise<Url | null> {
     return await this.urlModel.create(createUrlData);
+  }
+
+  async deleteUrl(shortCode: string, userId: string): Promise<string | null> {
+    return await this.urlModel.findOneAndDelete({ user: userId, shortCode });
+  }
+
+  async fetchUrl(
+    originalUrl: string,
+    userId: string,
+  ): Promise<fetchUrlResponse | null> {
+    return await this.urlModel.findOne({ user: userId, originalUrl });
   }
 
   async fetchUrls(
