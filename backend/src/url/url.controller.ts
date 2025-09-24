@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -55,7 +56,7 @@ export class UrlController extends AbstractUrlController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':userId')
+  @Get('user/:userId')
   async fetchUrls(
     @Param('userId') userId: string,
     @Query('page') page: number = 1,
@@ -69,6 +70,23 @@ export class UrlController extends AbstractUrlController {
       statusCode: STATUS_CODES.SUCCESS,
       message: 'Urls fetched successfully',
       data: urlData,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':shortCode')
+  async deleteUrl(
+    @Param('shortCode') shortCode: string,
+    @Req() req,
+  ): Promise<UrlResponse> {
+    const removedUrl = await this.urlService.deleteUrl(
+      shortCode,
+      req.user.userId,
+    );
+    return {
+      statusCode: STATUS_CODES.SUCCESS,
+      message: 'Url removed successfully',
+      data: removedUrl,
     };
   }
 }

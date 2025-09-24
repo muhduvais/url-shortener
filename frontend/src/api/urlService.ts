@@ -38,7 +38,7 @@ export const UrlService = {
     limit: number = 10,
     search: string
   ): Promise<FetchUrlResponse> => {
-    const response = await axios.get(`${VITE_SERVER_URL}/urls/${userId}`, {
+    const response = await axios.get(`${VITE_SERVER_URL}/urls/user/${userId}`, {
       params: {
         page,
         limit,
@@ -47,4 +47,9 @@ export const UrlService = {
     });
     return response.data;
   },
+
+  deleteUrl: async (shortCode: string): Promise<UrlResponse> => {
+    const response = await axios.delete(`${VITE_SERVER_URL}/urls/${shortCode}`);
+    return response.data;
+  }
 };
