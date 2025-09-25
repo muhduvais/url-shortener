@@ -70,6 +70,7 @@ VITE_SERVER_URL=http://localhost:3000
 
 ### **Folder Structure**
 
+```text
 .
 ├── backend
 │   ├── dist                # Compiled output (JS + .d.ts)
@@ -84,7 +85,6 @@ VITE_SERVER_URL=http://localhost:3000
 │   ├── test                # E2E and unit tests
 │   ├── package.json
 │   └── tsconfig.json
-│
 ├── frontend
 │   ├── public              # Static files
 │   ├── src                 # Frontend source code
@@ -98,8 +98,8 @@ VITE_SERVER_URL=http://localhost:3000
 │   ├── index.html
 │   ├── vite.config.ts
 │   └── package.json
-│
 └── README.md
+```
 
 ### **Future Improvements**
 
